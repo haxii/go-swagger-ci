@@ -11,7 +11,7 @@ RUN VERSION=$(git describe --abbrev=0 --tags) &&\
      COMMIT_HASH=$(git rev-parse HEAD) &&\
     LDFLAGS="$LDFLAGS -X github.com/go-swagger/go-swagger/cmd/swagger/commands.Commit=$COMMIT_HASH" &&\
     LDFLAGS="$LDFLAGS -X github.com/go-swagger/go-swagger/cmd/swagger/commands.Version=$VERSION" &&\
-    CGO_ENABLED=0 go build -tags osusergo,netgo -o /bin/swagger-$VERSION -ldflags "$LDFLAGS" -a ./cmd/swagger
+    CGO_ENABLED=0 go build -tags osusergo,netgo -o /bin/swagger-$VERSION -ldflags "-s -w $LDFLAGS" -a ./cmd/swagger
 
 RUN git checkout v0.28.0
 RUN VERSION=$(git describe --abbrev=0 --tags) && \
@@ -19,7 +19,7 @@ RUN VERSION=$(git describe --abbrev=0 --tags) && \
     LDFLAGS="-linkmode external -extldflags \"-static\"" &&\
     LDFLAGS="$LDFLAGS -X github.com/go-swagger/go-swagger/cmd/swagger/commands.Commit=$COMMIT_HASH" &&\
     LDFLAGS="$LDFLAGS -X github.com/go-swagger/go-swagger/cmd/swagger/commands.Version=$VERSION" &&\
-    go build -o /bin/swagger-$VERSION -ldflags "$LDFLAGS" -a ./cmd/swagger
+    go build -o /bin/swagger-$VERSION -ldflags "-s -w $LDFLAGS" -a ./cmd/swagger
 
 # swag
 WORKDIR /build/swag
@@ -27,14 +27,14 @@ RUN git clone https://github.com/swaggo/swag.git .
 
 RUN LATEST_TAG=$(git describe --tags $(git rev-list --tags --max-count=1))
 RUN git checkout $LATEST_TAG
-RUN CGO_ENABLED=0 go build -a -o /bin/swag cmd/swag/main.go
+RUN CGO_ENABLED=0 go build -a -ldflags "-s -w " -o /bin/swag cmd/swag/main.go
 
 # swagger-sdk-gen
 WORKDIR /build/js-swagger-sdk-gen
 RUN git clone https://github.com/haxii/js-swagger-sdk-gen.git .
 RUN VERSION=$(git describe --abbrev=0 --tags) &&\
     BUILD=$(git rev-parse --short HEAD) &&\
-    go build -o /bin/swagger-sdk-gen -ldflags "-X main.Build=$BUILD -X main.Version=$VERSION" ./cmd/js-swagger-sdk-gen/*
+    go build -o /bin/swagger-sdk-gen -ldflags "-s -w -X main.Build=$BUILD -X main.Version=$VERSION" ./cmd/js-swagger-sdk-gen/*
 
 # compress
 RUN upx --best /bin/swagger-v0.28.0
