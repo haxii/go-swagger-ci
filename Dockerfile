@@ -37,8 +37,8 @@ RUN VERSION=$(git describe --abbrev=0 --tags) &&\
     go build -o /bin/swagger-sdk-gen -ldflags "-X main.Build=$BUILD -X main.Version=$VERSION" ./cmd/js-swagger-sdk-gen/*
 
 # compress
-RUN upx --best /bin/swagger-0.28.0
-RUN upx --best /bin/swagger-0.30.4
+RUN upx --best /bin/swagger-v0.28.0
+RUN upx --best /bin/swagger-v0.30.4
 RUN upx --best /bin/swagger-sdk-gen
 RUN upx --best /bin/swag
 
